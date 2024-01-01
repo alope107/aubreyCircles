@@ -18,7 +18,7 @@ using fixed_point = circles::fixed_point_t<PRECISION>;
 inline fixed_point new_point(float x, float y) { return fixed_point(fixed(x), fixed(y));}
 inline fixed_point new_point(fixed x, fixed y) { return fixed_point(x, y);}
 
-const fixed SCALE = fixed(1);//fixed(10000);
+const fixed SCALE = fixed(1);
 const fixed LAUNCH_SCALE = fixed(.03);
 
 struct Attractor {
@@ -77,8 +77,8 @@ class Orbiter {
             fixed_point force = new_point(delta.x(), delta.y()) * -_attractor.mass;
             _velocity += force;
             _space_location += _velocity;
-            log("space_location", _space_location.x(), _space_location.y());
-            log("screen_location", screen_location().x(), screen_location().y());
+            // log("space_location", _space_location.x(), _space_location.y());
+            // log("screen_location", screen_location().x(), screen_location().y());
             _sprite.set_position(screen_location());
         }
 };
@@ -97,17 +97,15 @@ int main() {
     fixed_point vec_start(0, 0);
 
     bool start_set = false;
-    // int x = -72;
-    // int y = -31;
-    // int dx = 10;
-    // int dy = 10;
-    // bn::vector<Orbiter, 10> frems;
-    //bn::sprite_ptr new_spr = bn::sprite_items::circle.create_sprite(circle_spr.x(), circle_spr.y());
+    bn::vector<Orbiter, 200> frems;
     
-    Orbiter frem = Orbiter(new_point(100, -75), new_point(-100, 0), bn::sprite_items::circle);
+    // Orbiter frem = Orbiter(new_point(100, -75), new_point(-100, 0), bn::sprite_items::circle);
+    // frems.push_back(frem);
     
-    bn::sprite_ptr cursor = bn::sprite_items::circle.create_sprite(0, 0);
+    
+    bn::sprite_ptr cursor = bn::sprite_items::circle.create_sprite(30.5, 40.5);
 
+    bool newFrem = false;
     while(true) {
 
         if(true) {//bn::keypad::b_pressed()) {
@@ -115,10 +113,19 @@ int main() {
                 if (!start_set) {
                     vec_start = cursor.position();
                 } else {
-                    frem.set_space_location(vec_start * SCALE);
+                    auto starting_velocity = (fixed_point(cursor.position()) - vec_start) * LAUNCH_SCALE;
+                    
+                    // frems[0].set_velocity((fixed_point(cursor.position()) - vec_start) * LAUNCH_SCALE);
+                    // frems[0].set_space_location(cursor.position());
 
-                    frem.set_velocity((fixed_point(cursor.position()) - vec_start) * LAUNCH_SCALE);
-                }   
+                    // if (!newFrem) {
+                    //     newFrem = true;
+                        frems.push_back(Orbiter(cursor.position(), starting_velocity, bn::sprite_items::circle));
+                    // }
+                    //Orbiter frem = Orbiter(fixed_point(cursor.position()), starting_velocity, bn::sprite_items::circle);
+                    
+                }
+
                 start_set = !start_set;
             }
 
@@ -135,13 +142,15 @@ int main() {
                 cursor.set_y(cursor.y() + 1);
             }
 
-            // if (bn::keypad::a_pressed()) {
-            //     circle_spr.set_x(circle_spr.x() + 1);
-            //     bn::sprite_ptr new_spr = bn::sprite_items::circle.create_sprite(circle_spr.x(), circle_spr.y());
-            //     frems.push_back(new_spr);
+            // frems[0].update();
+            // if (newFrem) {
+            //     frems[1].update();
             // }
             
-            frem.update();
+            for (auto &frem : frems) {
+                // log("Fremmo");
+                frem.update();
+            }
         }
         bn::core::update();
     }
