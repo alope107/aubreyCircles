@@ -88,70 +88,49 @@ fixed scaled_squared_distance(fixed_point a, fixed_point b, fixed s) {
     delta /= s;
     return delta.x()*delta.x() + delta.y()*delta.y();
 }
+
 int main() {
     bn::core::init();
-
-    fixed_point delta(10, 0);
-    fixed_point mass_loc(0, 0);
 
     fixed_point vec_start(0, 0);
 
     bool start_set = false;
     bn::vector<Orbiter, 200> frems;
     
-    // Orbiter frem = Orbiter(new_point(100, -75), new_point(-100, 0), bn::sprite_items::circle);
-    // frems.push_back(frem);
-    
-    
     bn::sprite_ptr cursor = bn::sprite_items::circle.create_sprite(30.5, 40.5);
-
-    bool newFrem = false;
     while(true) {
-
-        if(true) {//bn::keypad::b_pressed()) {
-            if (bn::keypad::a_pressed()) {
-                if (!start_set) {
-                    vec_start = cursor.position();
-                } else {
-                    auto starting_velocity = (fixed_point(cursor.position()) - vec_start) * LAUNCH_SCALE;
-                    
-                    // frems[0].set_velocity((fixed_point(cursor.position()) - vec_start) * LAUNCH_SCALE);
-                    // frems[0].set_space_location(cursor.position());
-
-                    // if (!newFrem) {
-                    //     newFrem = true;
-                        frems.push_back(Orbiter(cursor.position(), starting_velocity, bn::sprite_items::circle));
-                    // }
-                    //Orbiter frem = Orbiter(fixed_point(cursor.position()), starting_velocity, bn::sprite_items::circle);
-                    
-                }
-
-                start_set = !start_set;
+        if (bn::keypad::a_pressed()) {
+            if (!start_set) {
+                vec_start = cursor.position();
+            } else {
+                auto starting_velocity = (fixed_point(cursor.position()) - vec_start) * LAUNCH_SCALE;
+                frems.push_back(Orbiter(vec_start, starting_velocity, bn::sprite_items::circle)); 
             }
 
-            if (bn::keypad::left_held()) {
-                cursor.set_x(cursor.x() - 1);
-            }
-            if (bn::keypad::right_held()) {
-                cursor.set_x(cursor.x() + 1);
-            }
-            if (bn::keypad::up_held()) {
-                cursor.set_y(cursor.y() - 1);
-            }
-            if (bn::keypad::down_held()) {
-                cursor.set_y(cursor.y() + 1);
-            }
-
-            // frems[0].update();
-            // if (newFrem) {
-            //     frems[1].update();
-            // }
-            
-            for (auto &frem : frems) {
-                // log("Fremmo");
-                frem.update();
-            }
+            start_set = !start_set;
         }
+
+        if (bn::keypad::left_held()) {
+            cursor.set_x(cursor.x() - 1);
+        }
+        if (bn::keypad::right_held()) {
+            cursor.set_x(cursor.x() + 1);
+        }
+        if (bn::keypad::up_held()) {
+            cursor.set_y(cursor.y() - 1);
+        }
+        if (bn::keypad::down_held()) {
+            cursor.set_y(cursor.y() + 1);
+        }
+
+        if(bn::keypad::start_pressed()) {
+            frems.clear();
+        }
+        
+        for (auto &frem : frems) {
+            frem.update();
+        }
+        
         bn::core::update();
     }
 }
