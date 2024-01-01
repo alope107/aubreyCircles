@@ -44,43 +44,30 @@ template<int maxSize=10000, typename... Types>
     }
 
 class Orbiter {
-    fixed_point _space_location;
-    fixed_point _velocity;
-    bn::sprite_ptr _sprite;
-    Attractor _attractor;
-    fixed _scale;
-
-
     public:
-        Orbiter(fixed_point starting_loc, fixed_point starting_velocity, bn::sprite_item sprite_item, Attractor attractor=ATTRACTOR, fixed scale=SCALE) :
-        _space_location(starting_loc),
-        _velocity(starting_velocity),
-        _scale(scale),
-        _sprite(sprite_item.create_sprite(bn::fixed_point(starting_loc / scale))),
+        fixed_point loc;
+        fixed_point velocity;
+
+        Orbiter(fixed_point starting_loc, fixed_point starting_velocity, bn::sprite_item sprite_item, Attractor attractor=ATTRACTOR) :
+        loc(starting_loc),
+        velocity(starting_velocity),
+        _sprite(sprite_item.create_sprite(starting_loc)),
         _attractor(attractor)
         {};
-        
-        fixed_point screen_location() {
-            return _space_location / _scale;
-        }
-
-        void set_space_location(fixed_point location) {
-            _space_location = location;
-        }
-
-        void set_velocity(fixed_point velocity) {
-            _velocity = velocity;
-        }
 
         void update() {
-            fixed_point delta = _space_location - _attractor.location;
+            fixed_point delta = loc - _attractor.location;
             fixed_point force = new_point(delta.x(), delta.y()) * -_attractor.mass;
-            _velocity += force;
-            _space_location += _velocity;
+            velocity += force;
+            loc += velocity;
             // log("space_location", _space_location.x(), _space_location.y());
             // log("screen_location", screen_location().x(), screen_location().y());
-            _sprite.set_position(screen_location());
+            _sprite.set_position(loc);
         }
+    
+    private:
+        bn::sprite_ptr _sprite;
+        Attractor _attractor;
 };
 
 fixed scaled_squared_distance(fixed_point a, fixed_point b, fixed s) {
@@ -130,7 +117,7 @@ int main() {
         for (auto &frem : frems) {
             frem.update();
         }
-        
+
         bn::core::update();
     }
 }
