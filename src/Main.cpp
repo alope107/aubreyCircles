@@ -19,6 +19,7 @@ inline fixed_point new_point(float x, float y) { return fixed_point(fixed(x), fi
 inline fixed_point new_point(fixed x, fixed y) { return fixed_point(x, y);}
 
 const fixed SCALE = fixed(1);//fixed(10000);
+const fixed LAUNCH_SCALE = fixed(.03);
 
 struct Attractor {
     fixed_point location;
@@ -73,7 +74,7 @@ class Orbiter {
 
         void update() {
             fixed_point delta = _space_location - _attractor.location;
-            fixed_point force = new_point(delta.x()*delta.x(), delta.y() * delta.y()) * _attractor.mass;
+            fixed_point force = new_point(delta.x(), delta.y()) * -_attractor.mass;
             _velocity += force;
             _space_location += _velocity;
             log("space_location", _space_location.x(), _space_location.y());
@@ -115,7 +116,8 @@ int main() {
                     vec_start = cursor.position();
                 } else {
                     frem.set_space_location(vec_start * SCALE);
-                    frem.set_velocity(new_point(0, 0));
+
+                    frem.set_velocity((fixed_point(cursor.position()) - vec_start) * LAUNCH_SCALE);
                 }   
                 start_set = !start_set;
             }
