@@ -122,10 +122,6 @@ int main() {
         if(bn::keypad::start_pressed()) {
             frems.clear();
         }
-        
-        for (auto &frem : frems) {
-            frem.update();
-        }
 
         for (int i = 0; i < frems.size(); i++) {
             for (int j = i+1; j < frems.size(); j++) {
@@ -140,6 +136,10 @@ int main() {
                 frems.erase(frems.begin() + i);
             }
             to_remove[i] = false;
+        }
+
+        for (auto &frem : frems) {
+            frem.update();
         }
 
         bn::core::update();
