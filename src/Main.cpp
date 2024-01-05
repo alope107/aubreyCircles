@@ -10,6 +10,9 @@
 #include "bn_log.h"
 #include "bn_string.h"
 #include "fixed_point_t.h"
+#include "bn_sprite_text_generator.h"
+
+#include "common_variable_8x16_sprite_font.h"
 
 const int PRECISION = 19;
 const int MAX_ORBITERS = 200;
@@ -22,6 +25,9 @@ inline fixed_point new_point(fixed x, fixed y) { return fixed_point(x, y);}
 
 const fixed SCALE = fixed(1);
 const fixed LAUNCH_SCALE = fixed(.03);
+
+const auto current_score_loc = fixed_point(100, -60);
+const auto high_score_loc = fixed_point(-100, -60);
 
 struct Attractor {
     fixed_point location;
@@ -86,12 +92,17 @@ class Orbiter {
 int main() {
     bn::core::init();
 
+    bn::sprite_font font = common::variable_8x16_sprite_font;
+    bn::sprite_text_generator text_generator(font);
+
     fixed_point vec_start(0, 0);
 
     bool start_set = false;
 
     bn::vector<Orbiter, MAX_ORBITERS> frems;
     bool to_remove[MAX_ORBITERS] = {};
+
+    int high_score = 0;
     
     bn::sprite_ptr cursor = bn::sprite_items::circle.create_sprite(30.5, 40.5);
     while(true) {
@@ -141,6 +152,12 @@ int main() {
         for (auto &frem : frems) {
             frem.update();
         }
+
+        high_score = frems.size() > high_score ? frems.size() : high_score;
+
+         bn::vector<bn::sprite_ptr, 32> text_sprites;
+         text_generator.generate(current_score_loc, bn::to_string<16>(frems.size()), text_sprites);
+         text_generator.generate(high_score_loc, bn::to_string<16>(high_score), text_sprites);
 
         bn::core::update();
     }
