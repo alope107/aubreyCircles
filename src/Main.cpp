@@ -1,7 +1,7 @@
 #include "bn_core.h"
 #include "bn_sprite_ptr.h"
 
-#include "bn_sprite_items_circle.h"
+#include "bn_sprite_items_cute.h"
 #include "bn_keypad.h"
 #include <bn_vector.h>
 #include <bn_memory.h>
@@ -104,14 +104,14 @@ int main() {
 
     int high_score = 0;
     
-    bn::sprite_ptr cursor = bn::sprite_items::circle.create_sprite(30.5, 40.5);
+    bn::sprite_ptr cursor = bn::sprite_items::cute.create_sprite(30.5, 40.5);
     while(true) {
         if (bn::keypad::a_pressed()) {
             if (!start_set) {
                 vec_start = cursor.position();
             } else {
                 auto starting_velocity = (fixed_point(cursor.position()) - vec_start) * LAUNCH_SCALE;
-                frems.push_back(Orbiter(vec_start, starting_velocity, 14, bn::sprite_items::circle)); 
+                frems.push_back(Orbiter(vec_start, starting_velocity, 14, bn::sprite_items::cute)); 
             }
 
             start_set = !start_set;
