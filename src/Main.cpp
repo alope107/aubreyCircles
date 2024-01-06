@@ -1,7 +1,7 @@
 #include "bn_core.h"
 #include "bn_sprite_ptr.h"
 
-#include "bn_sprite_items_cute.h"
+#include "bn_sprite_items_faces.h"
 #include "bn_keypad.h"
 #include <bn_vector.h>
 #include <bn_memory.h>
@@ -11,17 +11,23 @@
 #include "bn_string.h"
 #include "fixed_point_t.h"
 #include "bn_sprite_text_generator.h"
+#include "bn_sprite_tiles_ptr.h"
 
 #include "common_variable_8x16_sprite_font.h"
 
 const int PRECISION = 19;
 const int MAX_ORBITERS = 200;
 
+const int NUM_FACES = 26;
+
 using fixed = bn::fixed_t<PRECISION>;
 using fixed_point = circles::fixed_point_t<PRECISION>;
 
 inline fixed_point new_point(float x, float y) { return fixed_point(fixed(x), fixed(y));}
 inline fixed_point new_point(fixed x, fixed y) { return fixed_point(x, y);}
+
+const bn::fixed HALF_SCREEN_WIDTH = 120;
+const bn::fixed HALF_SCREEN_HEIGHT = 80;
 
 const fixed SCALE = fixed(1);
 const fixed LAUNCH_SCALE = fixed(.03);
@@ -62,13 +68,17 @@ class Orbiter {
         fixed_point velocity;
         fixed length;
 
-        Orbiter(fixed_point starting_loc, fixed_point starting_velocity, fixed sprite_length, bn::sprite_item sprite_item, Attractor attractor=ATTRACTOR) :
+        Orbiter(fixed_point starting_loc, fixed_point starting_velocity, fixed sprite_length, bn::sprite_item sprite_item, int tile_idx, Attractor attractor=ATTRACTOR) :
         loc(starting_loc),
         velocity(starting_velocity),
         length(sprite_length),
+        _sprite_item(sprite_item),
         _sprite(sprite_item.create_sprite(starting_loc)),
+        _tile_idx(tile_idx),
         _attractor(attractor)
-        {};
+        {
+            _sprite.set_tiles(_sprite_item.tiles_item().create_tiles(tile_idx));
+        };
 
         void update() {
             fixed_point delta = loc - _attractor.location;
@@ -85,7 +95,9 @@ class Orbiter {
         }
     
     private:
+        bn::sprite_item _sprite_item;
         bn::sprite_ptr _sprite;
+        int _tile_idx;
         Attractor _attractor;
 };
 
@@ -103,31 +115,33 @@ int main() {
     bool to_remove[MAX_ORBITERS] = {};
 
     int high_score = 0;
+
+    unsigned int frame_count = 0;
     
-    bn::sprite_ptr cursor = bn::sprite_items::cute.create_sprite(30.5, 40.5);
+    bn::sprite_ptr cursor = bn::sprite_items::faces.create_sprite(30.5, 40.5);
     while(true) {
         if (bn::keypad::a_pressed()) {
             if (!start_set) {
                 vec_start = cursor.position();
             } else {
                 auto starting_velocity = (fixed_point(cursor.position()) - vec_start) * LAUNCH_SCALE;
-                frems.push_back(Orbiter(vec_start, starting_velocity, 14, bn::sprite_items::cute)); 
+                frems.push_back(Orbiter(vec_start, starting_velocity, 14, bn::sprite_items::faces, frame_count % 26)); 
             }
 
             start_set = !start_set;
         }
 
         if (bn::keypad::left_held()) {
-            cursor.set_x(cursor.x() - 1);
+            cursor.set_x(bn::max(-HALF_SCREEN_WIDTH, cursor.x() - 1));
         }
         if (bn::keypad::right_held()) {
-            cursor.set_x(cursor.x() + 1);
+            cursor.set_x(bn::min(HALF_SCREEN_WIDTH, cursor.x() + 1));
         }
         if (bn::keypad::up_held()) {
-            cursor.set_y(cursor.y() - 1);
+            cursor.set_y(bn::max(-HALF_SCREEN_HEIGHT, cursor.y() - 1));
         }
         if (bn::keypad::down_held()) {
-            cursor.set_y(cursor.y() + 1);
+            cursor.set_y(bn::min(HALF_SCREEN_HEIGHT, cursor.y() + 1));
         }
 
         if(bn::keypad::start_pressed()) {
@@ -160,5 +174,6 @@ int main() {
          text_generator.generate(high_score_loc, bn::to_string<16>(high_score), text_sprites);
 
         bn::core::update();
+        frame_count++;
     }
 }
