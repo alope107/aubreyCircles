@@ -2,6 +2,7 @@
 #include "bn_sprite_ptr.h"
 
 #include "bn_sprite_items_faces.h"
+#include "bn_sprite_items_line.h"
 #include "bn_keypad.h"
 #include <bn_vector.h>
 #include <bn_memory.h>
@@ -119,8 +120,13 @@ int main() {
     unsigned int frame_count = 0;
     
     bn::sprite_ptr cursor = bn::sprite_items::faces.create_sprite(30.5, 40.5);
+
+    // auto line = bn::sprite_items::line.create_sprite(0, 0);
     while(true) {
         if (bn::keypad::a_pressed()) {
+            // line.set_horizontal_scale(line.horizontal_scale() + .5);
+            // log(line.horizontal_scale());
+
             if (!start_set) {
                 vec_start = cursor.position();
             } else {
@@ -130,6 +136,11 @@ int main() {
 
             start_set = !start_set;
         }
+
+        // if (frame_count % 10) {
+        //     //line.set_horizontal_scale(line.horizontal_scale() + .1);
+        //     line.set_horizontal_scale(;
+        // }
 
         if (bn::keypad::left_held()) {
             cursor.set_x(bn::max(-HALF_SCREEN_WIDTH, cursor.x() - 1));
