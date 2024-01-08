@@ -11,22 +11,17 @@
 #include <bn_math.h>
 #include "bn_log.h"
 #include "bn_string.h"
-#include "fixed_point_t.h"
+
+#include "circles_fixed_point.h"
+
 #include "bn_sprite_text_generator.h"
 #include "bn_sprite_tiles_ptr.h"
 
 #include "common_variable_8x16_sprite_font.h"
 
-const int PRECISION = 19;
 const int MAX_ORBITERS = 200;
 
 const int NUM_FACES = 26;
-
-using fixed = bn::fixed_t<PRECISION>;
-using fixed_point = circles::fixed_point_t<PRECISION>;
-
-inline fixed_point new_point(float x, float y) { return fixed_point(fixed(x), fixed(y));}
-inline fixed_point new_point(fixed x, fixed y) { return fixed_point(x, y);}
 
 const bn::fixed HALF_SCREEN_WIDTH = 120;
 const bn::fixed HALF_SCREEN_HEIGHT = 80;
