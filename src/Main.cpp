@@ -2,6 +2,7 @@
 #include "bn_sprite_ptr.h"
 
 #include "bn_sprite_items_faces.h"
+#include "bn_sprite_items_dot.h"
 #include "bn_sprite_items_line.h"
 #include "bn_keypad.h"
 #include <bn_vector.h>
@@ -119,7 +120,7 @@ int main() {
 
     unsigned int frame_count = 0;
     
-    bn::sprite_ptr cursor = bn::sprite_items::faces.create_sprite(30.5, 40.5);
+    bn::sprite_ptr cursor = bn::sprite_items::dot.create_sprite(30.5, 40.5);
 
     // auto line = bn::sprite_items::line.create_sprite(0, 0);
     while(true) {
