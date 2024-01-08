@@ -74,7 +74,8 @@ int main() {
     unsigned int frame_count = 0;
     
     bn::sprite_ptr cursor = bn::sprite_items::dot.create_sprite(30.5, 40.5);
-
+    cursor.set_z_order(-1);
+    
     // auto line = bn::sprite_items::line.create_sprite(0, 0);
     while(true) {
         if (bn::keypad::a_pressed()) {
