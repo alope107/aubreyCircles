@@ -1,4 +1,7 @@
-#include "fixed_point_t.h"
+#ifndef CIRCLES_FIXED_POINT_H
+#define CIRCLES_FIXED_POINT_H
+
+#include "circles_fixed_point_t.h"
 
 const int PRECISION = 19;
 
@@ -7,3 +10,5 @@ using fixed_point = circles::fixed_point_t<PRECISION>;
 
 inline fixed_point new_point(float x, float y) { return fixed_point(fixed(x), fixed(y));}
 inline fixed_point new_point(fixed x, fixed y) { return fixed_point(x, y);}
+
+#endif

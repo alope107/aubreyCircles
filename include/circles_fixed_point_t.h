@@ -3,8 +3,8 @@
  * zlib License, see LICENSE file.
  */
 
-#ifndef CIRCLES_FIXED_POINT_H
-#define CIRCLES_FIXED_POINT_H
+#ifndef CIRCLES_FIXED_POINT_T_H
+#define CIRCLES_FIXED_POINT_T_H
 
 /**
  * @file
@@ -330,6 +330,7 @@ public:
 
 
     operator bn::fixed_point() const {
+        // TODO(auberon): Achieve this via bit shifts?
         return bn::fixed_point(_x, _y);
     }
 private:

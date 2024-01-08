@@ -13,6 +13,8 @@
 #include "bn_string.h"
 
 #include "circles_fixed_point.h"
+#include "circles_attractor.h"
+#include "circles_orbiter.h"
 
 #include "bn_sprite_text_generator.h"
 #include "bn_sprite_tiles_ptr.h"
@@ -31,11 +33,6 @@ const fixed LAUNCH_SCALE = fixed(.03);
 
 const auto current_score_loc = fixed_point(100, -60);
 const auto high_score_loc = fixed_point(-100, -60);
-
-struct Attractor {
-    fixed_point location;
-    fixed mass;
-};
 
 const Attractor ATTRACTOR = {
     new_point(0, 0),
@@ -58,45 +55,6 @@ template<int maxSize=10000, typename... Types>
         (message += ... += (bn::to_string<maxSize>(vals) + bn::to_string<maxSize>(" ")));
         bn::log(message);
     }
-
-class Orbiter {
-    public:
-        fixed_point loc;
-        fixed_point velocity;
-        fixed length;
-
-        Orbiter(fixed_point starting_loc, fixed_point starting_velocity, fixed sprite_length, bn::sprite_item sprite_item, int tile_idx, Attractor attractor=ATTRACTOR) :
-        loc(starting_loc),
-        velocity(starting_velocity),
-        length(sprite_length),
-        _sprite_item(sprite_item),
-        _sprite(sprite_item.create_sprite(starting_loc)),
-        _tile_idx(tile_idx),
-        _attractor(attractor)
-        {
-            _sprite.set_tiles(_sprite_item.tiles_item().create_tiles(tile_idx));
-        };
-
-        void update() {
-            fixed_point delta = loc - _attractor.location;
-            fixed_point force = new_point(delta.x(), delta.y()) * -_attractor.mass;
-            velocity += force;
-            loc += velocity;
-            _sprite.set_position(loc);
-        }
-
-        bool overlaps(Orbiter other) {
-            //currently assumes we're squares of the same size
-            return (bn::abs(loc.x() - other.loc.x()) < length) &&
-                   (bn::abs(loc.y() - other.loc.y()) < length);
-        }
-    
-    private:
-        bn::sprite_item _sprite_item;
-        bn::sprite_ptr _sprite;
-        int _tile_idx;
-        Attractor _attractor;
-};
 
 int main() {
     bn::core::init();
@@ -127,7 +85,7 @@ int main() {
                 vec_start = cursor.position();
             } else {
                 auto starting_velocity = (fixed_point(cursor.position()) - vec_start) * LAUNCH_SCALE;
-                frems.push_back(Orbiter(vec_start, starting_velocity, 14, bn::sprite_items::faces, frame_count % 26)); 
+                frems.push_back(Orbiter(vec_start, starting_velocity, 14, bn::sprite_items::faces, frame_count % 26, ATTRACTOR)); 
             }
 
             start_set = !start_set;
